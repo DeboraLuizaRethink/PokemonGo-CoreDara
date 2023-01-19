@@ -40,6 +40,15 @@ class CoreDataPokemon {
         return []
     }
     
+    func salvarPokemon(pokemon: Pokemon ){
+        let context = self.getContext()
+        pokemon.capturado = true
+        
+        do{
+            try context.save()
+        }catch{}
+    }
+    
     //adicionar todos os pokemon
     func adicionarTodosPokemon(){
         
@@ -52,7 +61,7 @@ class CoreDataPokemon {
         self.criarPokemon(nome: "Charmander", nomeImagem: "charmander", capturado: false)
         self.criarPokemon(nome: "Meowth", nomeImagem: "meowth", capturado: false)
         self.criarPokemon(nome: "Mew", nomeImagem: "mew", capturado: false)
-        self.criarPokemon(nome: "Pikachu", nomeImagem: "pikachu-2", capturado: true)
+        self.criarPokemon(nome: "Pikachu", nomeImagem: "pikachu-2", capturado: false)
         self.criarPokemon(nome: "Rattata", nomeImagem: "rattata", capturado: false)
         self.criarPokemon(nome: "Snorlax", nomeImagem: "snorlax", capturado: false)
         self.criarPokemon(nome: "Squirtle", nomeImagem: "squirtle", capturado: false)

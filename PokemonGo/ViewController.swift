@@ -30,7 +30,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         self.pokemons = self.coreDataPokemon.recuperarTodosPokemon()
         
         //exibir pokemons
-        Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { timer in
+        Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { timer in
             
             if let coordenadas = self.gerenciadorLocalizacao.location?.coordinate{
                 
@@ -79,12 +79,42 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         
         let anotacao = view.annotation
+        let pokemon = (anotacao as! PokemonAnotacao).pokemon
         mapView.deselectAnnotation(anotacao, animated: true)
+        
         if anotacao is MKUserLocation {
-          //significa q é o user
-        }else{
-            
+          return
         }
+        
+        if let coordAnotacao = anotacao?.coordinate{
+            let regiao = MapKit.MKCoordinateRegion.init(center: coordAnotacao, latitudinalMeters: 200, longitudinalMeters: 200)
+            mapa.setRegion(regiao, animated: true)
+        }
+        
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { timer in
+            
+            if let coord = self.gerenciadorLocalizacao.location?.coordinate {
+                if  self.mapa.visibleMapRect.contains(MKMapPoint(coord)) {
+                    self.coreDataPokemon.salvarPokemon(pokemon: pokemon)
+                    self.mapa.removeAnnotation(anotacao!)
+                    
+                    //alerta
+                    let alertController = UIAlertController(title: "Parabéns", message: "Você capturou o pokémon: \(String(describing: pokemon.nome))", preferredStyle: .alert)
+                    let ok = UIAlertAction(title: "ok", style: .default)
+                    alertController.addAction(ok)
+                    self.present(alertController, animated: true)
+                    
+                }else{
+                    //alerta
+                    let alertController = UIAlertController(title: "Que pena!", message: "O pokémon \(String(describing: pokemon.nome)) está muito longe para ser capturado", preferredStyle: .alert)
+                    let ok = UIAlertAction(title: "ok", style: .default)
+                    alertController.addAction(ok)
+                    self.present(alertController, animated: true)
+                }
+            }
+        }
+       
+        
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
